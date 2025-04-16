@@ -4,6 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = { version = "1.38", features = ["full"] }
-bevy = "0.13"  # o la versión que estés usando
-rand="0.8"
+bevy = "0.12"
+rand = "0.8"
+
+[dependencies.bevy_rapier2d]
+version = "0.24"
+features = [ "default",]
+
+[dependencies.tokio]
+version = "1.38"
+features = [ "full",]
