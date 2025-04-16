@@ -7,7 +7,6 @@ mod events;
 mod setup;
 mod systems;
 
-use components::*;
 use resources::*;
 use events::*;
 use setup::setup;
@@ -22,6 +21,9 @@ use systems::{
     handle_goal,
     update_turn_text,
     update_score_text, // ✅ agregado
+    draw_aim_direction_gizmo,
+    update_power_bar,//nuevo
+    animate_selected_disk, //nuevo
 };
 
 fn main() {
@@ -30,7 +32,6 @@ fn main() {
         .insert_resource(TurnState {
             current_turn: 1,
             selected_entity: None,
-            selected_index: 0,
             aim_direction: Vec2::ZERO,
             power: 0.0,
             in_motion: false,
@@ -57,9 +58,12 @@ fn main() {
             handle_goal,
             update_turn_text,
             update_score_text, // ✅ agregado aquí
+            animate_selected_disk, //nuevo
         ))
         .add_systems(PostUpdate, (
             fire_selected_disk, // ✅ lo mantenemos en PostUpdate
+            draw_aim_direction_gizmo, //nuevo
+            update_power_bar,//nuevo
         ))
         .run();
 }

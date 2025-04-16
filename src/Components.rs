@@ -17,10 +17,11 @@ pub struct GoalZone {
 }
 
 #[derive(Component)]
-pub struct AimIndicator;
-
-#[derive(Component)]
 pub struct TurnText;
 
  #[derive(Component)]
  pub struct ScoreText;
+
+ #[derive(Component)]
+ pub struct PowerBar;
+

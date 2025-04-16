@@ -7,7 +7,6 @@ pub struct TurnState {
     pub selected_entity: Option<Entity>,
     pub aim_direction: Vec2,
     pub power: f32,
-    pub selected_index: usize,
 }
 
 #[derive(Resource, Default)]

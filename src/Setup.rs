@@ -5,6 +5,7 @@ use crate::components::*;
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
 
+    // Texto de turno
     commands.spawn((
         TextBundle::from_section(
             "Turno: Jugador 1",
@@ -23,6 +24,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         TurnText,
     ));
 
+    // Texto de marcador
     commands.spawn((
         TextBundle::from_section(
             "Jugador 1: 0 | Jugador 2: 0",
@@ -40,6 +42,35 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             }),
         ScoreText,
     ));
+
+    // Barra de poder
+    commands.spawn(NodeBundle {
+        style: Style {
+            position_type: PositionType::Absolute,
+            bottom: Val::Px(20.0),
+            left: Val::Px(20.0),
+            width: Val::Px(200.0),
+            height: Val::Px(20.0),
+            ..default()
+        },
+        background_color: BackgroundColor(Color::DARK_GRAY),
+        ..default()
+    })
+        .with_children(|parent| {
+            parent.spawn((
+                NodeBundle {
+                    style: Style {
+                        width: Val::Px(0.0), // Se ajustará dinámicamente
+                        height: Val::Px(20.0),
+                        ..default()
+                    },
+                    background_color: BackgroundColor(Color::YELLOW),
+                    ..default()
+                },
+                PowerBar,
+            ));
+        });
+
 
     let wall_thickness = 10.0;
     let bounds = Vec2::new(800.0, 600.0);

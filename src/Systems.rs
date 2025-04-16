@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy::input::Input;
 use bevy::input::keyboard::KeyCode;
 use bevy_rapier2d::prelude::*;
+use bevy::gizmos::gizmos::Gizmos; //nuevo
 
 use crate::components::*;
 use crate::resources::*;
@@ -263,5 +264,42 @@ pub fn update_score_text(scores: Res<Scores>, mut texts: Query<&mut Text, With<S
     if scores.is_changed() {
         let mut text = texts.single_mut();
         text.sections[0].value = format!("P1: {}  -  P2: {}", scores.left, scores.right);
+    }
+}
+pub fn draw_aim_direction_gizmo(
+    mut gizmos: Gizmos,
+    turn_state: Res<TurnState>,
+    query: Query<&Transform, With<TurnControlled>>,
+) {
+    if let Some(entity) = turn_state.selected_entity {
+        if let Ok(transform) = query.get(entity) {
+            let start = transform.translation.truncate();
+            let end = start + turn_state.aim_direction * 100.0;
+            gizmos.line_2d(start, end, Color::YELLOW);
+        }
+    }
+}
+
+pub fn update_power_bar(
+        turn_state: Res<TurnState>,
+    mut query: Query<&mut Style, With<PowerBar>>,
+) {
+    if let Ok(mut style) = query.get_single_mut() {
+        style.width = Val::Px(200.0 * turn_state.power);
+    }
+}
+
+pub fn animate_selected_disk(
+    time: Res<Time>,
+    turn_state: Res<TurnState>,
+    mut query: Query<&mut Sprite>,
+) {
+    if let Some(selected) = turn_state.selected_entity {
+        if let Ok(mut sprite) = query.get_mut(selected) {
+            let t = (time.elapsed_seconds() * 6.0).sin() * 0.5 + 0.5;
+            let mut color = sprite.color;
+            color.set_a(0.2 + 0.8 * t); // nueva transparencia
+            sprite.color = color; // reasignar el color entero
+        }
     }
 }
