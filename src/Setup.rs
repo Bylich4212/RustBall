@@ -105,20 +105,38 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
 
     commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::ORANGE,
+                custom_size: Some(Vec2::new(20.0, 120.0)),
+                ..default()
+            },
+            transform: Transform::from_xyz(-half_w + 5.0, 0.0, 0.0),
+            ..default()
+        },
         Collider::cuboid(10.0, 60.0),
         Sensor,
         ActiveEvents::COLLISION_EVENTS,
-        TransformBundle::from_transform(Transform::from_xyz(-half_w + 5.0, 0.0, 0.0)),
         GoalZone { is_left: true },
     ));
 
+
     commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::ORANGE,
+                custom_size: Some(Vec2::new(20.0, 120.0)),
+                ..default()
+            },
+            transform: Transform::from_xyz(half_w - 5.0, 0.0, 0.0),
+            ..default()
+        },
         Collider::cuboid(10.0, 60.0),
         Sensor,
         ActiveEvents::COLLISION_EVENTS,
-        TransformBundle::from_transform(Transform::from_xyz(half_w - 5.0, 0.0, 0.0)),
         GoalZone { is_left: false },
     ));
+
 
     let positions_p1 = vec![
         Vec2::new(-250.0, 0.0),
@@ -139,8 +157,9 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     for pos in positions_p1 {
         commands.spawn((
             SpriteBundle {
+                texture: asset_server.load("circulobarca.png"),
                 sprite: Sprite {
-                    color: Color::BLUE,
+                    color: Color::WHITE,
                     custom_size: Some(Vec2::splat(50.0)),
                     ..default()
                 },
@@ -167,8 +186,9 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     for pos in positions_p2 {
         commands.spawn((
             SpriteBundle {
+                texture: asset_server.load("circuloparis.png"),
                 sprite: Sprite {
-                    color: Color::GREEN,
+                    color: Color::WHITE,
                     custom_size: Some(Vec2::splat(50.0)),
                     ..default()
                 },
@@ -194,6 +214,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn((
         SpriteBundle {
+            texture: asset_server.load("pelota.png"),
             sprite: Sprite {
                 color: Color::WHITE,
                 custom_size: Some(Vec2::splat(30.0)),

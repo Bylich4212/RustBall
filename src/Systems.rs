@@ -18,7 +18,7 @@ pub fn auto_select_first_disk(
         for (entity, disk) in &disks {
             if disk.player_id == turn_state.current_turn {
                 if let Ok(mut sprite) = sprites.get_mut(entity) {
-                    sprite.color = Color::YELLOW;
+                    sprite.color = Color::WHITE;
                 }
                 commands.entity(entity).insert(TurnControlled);
                 turn_state.selected_entity = Some(entity);
@@ -53,7 +53,7 @@ pub fn cycle_disk_selection(
                     let color = player_disks
                         .iter()
                         .find(|(e, _)| *e == current)
-                        .map(|(_, disk)| if disk.player_id == 1 { Color::BLUE } else { Color::GREEN })
+                        .map(|(_, disk)| if disk.player_id == 1 { Color::WHITE } else { Color::WHITE })
                         .unwrap_or(Color::WHITE);
                     sprite.color = color;
                 }
@@ -67,7 +67,7 @@ pub fn cycle_disk_selection(
 
             let (new_entity, _) = player_disks[next_index];
             if let Ok(mut sprite) = sprites.get_mut(new_entity) {
-                sprite.color = Color::YELLOW;
+                sprite.color = Color::WHITE;
             }
             commands.entity(new_entity).insert(TurnControlled);
             turn_state.selected_entity = Some(new_entity);
@@ -157,7 +157,7 @@ pub fn check_turn_end(
         for entity in &entities {
             if let Ok(disk) = disks.get(entity) {
                 if let Ok(mut sprite) = sprites.get_mut(entity) {
-                    sprite.color = if disk.player_id == 1 { Color::BLUE } else { Color::GREEN };
+                    sprite.color = if disk.player_id == 1 { Color::WHITE } else { Color::WHITE };
                 }
             }
             commands.entity(entity).remove::<TurnControlled>();
@@ -237,9 +237,9 @@ pub fn handle_goal(
         if let Some(entity) = turn_state.selected_entity {
             if let Ok(mut sprite) = sprites.get_mut(entity) {
                 sprite.color = if turn_state.current_turn == 1 {
-                    Color::BLUE
+                    Color::WHITE
                 } else {
-                    Color::GREEN
+                    Color::WHITE
                 };
             }
             commands.entity(entity).remove::<TurnControlled>();

@@ -1,9 +1,9 @@
  use bevy::prelude::*;
 
-#[derive(Component)]
-pub struct PlayerDisk {
-    pub player_id: usize,
-}
+ #[derive(Component)]
+ pub struct PlayerDisk {
+     pub player_id: usize,
+ }
 
 #[derive(Component)]
 pub struct Ball;
