@@ -4,8 +4,8 @@ use bevy_rapier2d::prelude::*;
 mod components;
 mod resources;
 mod events;
-mod setup;
 mod systems;
+mod setup;
 
 use resources::*;
 use events::*;
@@ -20,15 +20,15 @@ use systems::{
     detect_goal,
     handle_goal,
     update_turn_text,
-    update_score_text, // ✅ agregado
+    update_score_text,
     draw_aim_direction_gizmo,
-    update_power_bar,//nuevo
-    animate_selected_disk, //nuevo
+    update_power_bar,
+    animate_selected_disk,
 };
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(0.3, 0.7, 0.3)))
+        .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(TurnState {
             current_turn: 1,
             selected_entity: None,
@@ -57,13 +57,13 @@ fn main() {
             detect_goal,
             handle_goal,
             update_turn_text,
-            update_score_text, // ✅ agregado aquí
-            animate_selected_disk, //nuevo
+            update_score_text,
+            animate_selected_disk,
         ))
         .add_systems(PostUpdate, (
-            fire_selected_disk, // ✅ lo mantenemos en PostUpdate
-            draw_aim_direction_gizmo, //nuevo
-            update_power_bar,//nuevo
+            fire_selected_disk,
+            draw_aim_direction_gizmo,
+            update_power_bar,
         ))
         .run();
 }

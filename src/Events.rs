@@ -4,3 +4,4 @@ use bevy::prelude::*;
 pub struct GoalEvent {
     pub scored_by_left: bool,
 }
+
