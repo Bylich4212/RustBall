@@ -15,5 +15,34 @@ pub struct Scores {
     pub right: u32,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Formation {
+    Rombo1211,
+    Muro221,
+    Ofensiva113,
+    Diamante2111,
+}
+
+#[derive(Resource, Debug)]
+pub struct PlayerFormations {
+    pub player1: Option<Formation>,
+    pub player2: Option<Formation>,
+}
+
+/// Estados globales del juego
+#[derive(States, Default, Debug, Clone, Eq, PartialEq, Hash)]
+pub enum AppState {
+    #[default]
+    FormationSelection,  // Pantalla inicial para elegir formación
+    InGame,              // Juego activo
+    FormationChange,     // 🔁 Cambio de formación tras un gol
+}
+
+
+
+
+
+
+
 
 

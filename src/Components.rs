@@ -25,5 +25,7 @@ pub struct TurnText;
  #[derive(Component)]
  pub struct PowerBar;
 
+ #[derive(Component)]
+ pub struct FormationMenu;
 
 

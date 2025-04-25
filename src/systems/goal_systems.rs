@@ -4,6 +4,8 @@ use bevy_rapier2d::prelude::*;
 use crate::components::*;
 use crate::events::*;
 use crate::resources::*;
+use crate::resources::AppState; // Asegúrate de importar AppState
+use bevy::ecs::schedule::NextState; // Necesario para cambiar de estado
 
 pub fn detect_goal(
     mut collision_events: EventReader<CollisionEvent>,
@@ -32,9 +34,9 @@ pub fn handle_goal(
     mut goal_events: EventReader<GoalEvent>,
     mut scores: ResMut<Scores>,
     mut turn_state: ResMut<TurnState>,
-    mut transforms: Query<(&mut Transform, Option<&PlayerDisk>, Option<&Ball>)>,
     mut sprites: Query<&mut Sprite>,
     mut commands: Commands,
+    mut next_state: ResMut<NextState<AppState>>, // ✅ importante
 ) {
     for event in goal_events.read() {
         if event.scored_by_left {
@@ -45,33 +47,7 @@ pub fn handle_goal(
             println!("Gol para el jugador derecho! Puntos: {}", scores.right);
         }
 
-        for (mut transform, is_disk, is_ball) in &mut transforms {
-            if is_ball.is_some() {
-                transform.translation = Vec3::ZERO;
-            } else if let Some(disk) = is_disk {
-                let positions = if disk.player_id == 1 {
-                    [
-                        Vec2::new(-400.0, 0.0),
-                        Vec2::new(-300.0, 150.0),
-                        Vec2::new(-300.0, -150.0),
-                        Vec2::new(-150.0, 100.0),
-                        Vec2::new(-150.0, -100.0),
-                    ]
-                } else {
-                    [
-                        Vec2::new(400.0, 0.0),
-                        Vec2::new(300.0, 150.0),
-                        Vec2::new(300.0, -150.0),
-                        Vec2::new(150.0, 100.0),
-                        Vec2::new(150.0, -100.0),
-                    ]
-                };
-                let idx = transform.translation.y as i32 / 100 + 2;
-                let pos = positions.get(idx as usize % positions.len()).unwrap_or(&positions[0]);
-                transform.translation = pos.extend(0.0);
-            }
-        }
-
+        // ✅ Reiniciar lógica de turno
         if let Some(entity) = turn_state.selected_entity {
             if let Ok(mut sprite) = sprites.get_mut(entity) {
                 sprite.color = Color::WHITE;
@@ -84,5 +60,8 @@ pub fn handle_goal(
         turn_state.aim_direction = Vec2::ZERO;
         turn_state.power = 0.0;
         turn_state.current_turn = turn_state.current_turn % 2 + 1;
+
+        // ✅ Cambiar al estado para re-seleccionar formaciones
+        next_state.set(AppState::FormationChange);
     }
 }

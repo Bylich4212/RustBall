@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use crate::components::*;
+use crate::components::Ball;
 
 pub fn spawn_ball(commands: &mut Commands, asset_server: &Res<AssetServer>) {
     let damping = Damping {
