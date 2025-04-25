@@ -38,6 +38,10 @@ pub enum AppState {
     FormationChange,     // 🔁 Cambio de formación tras un gol
 }
 
+#[derive(Component)]
+pub struct PowerBarBackground;
+
+
 
 
 

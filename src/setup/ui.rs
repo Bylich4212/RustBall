@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use crate::components::*;
+use crate::resources::PowerBarBackground;
 
 pub fn spawn_ui(commands: &mut Commands, asset_server: &Res<AssetServer>) {
     // Texto del turno
@@ -41,18 +42,21 @@ pub fn spawn_ui(commands: &mut Commands, asset_server: &Res<AssetServer>) {
     ));
 
     // Barra de poder
-    commands.spawn(NodeBundle {
-        style: Style {
-            position_type: PositionType::Absolute,
-            bottom: Val::Px(20.0),
-            left: Val::Px(20.0),
-            width: Val::Px(200.0),
-            height: Val::Px(20.0),
+    commands.spawn((
+        NodeBundle {
+            style: Style {
+                position_type: PositionType::Absolute,
+                bottom: Val::Px(20.0),
+                left: Val::Px(20.0),
+                width: Val::Px(200.0),
+                height: Val::Px(20.0),
+                ..default()
+            },
+            background_color: BackgroundColor(Color::DARK_GRAY),
             ..default()
         },
-        background_color: BackgroundColor(Color::DARK_GRAY),
-        ..default()
-    })
+        PowerBarBackground, // ✅
+    ))
         .with_children(|parent| {
             parent.spawn((
                 NodeBundle {
@@ -67,4 +71,14 @@ pub fn spawn_ui(commands: &mut Commands, asset_server: &Res<AssetServer>) {
                 PowerBar,
             ));
         });
+}
+
+// ✅ Mover esta función fuera de `spawn_ui`
+pub fn cleanup_power_bar(
+    mut commands: Commands,
+    query: Query<Entity, With<PowerBarBackground>>,
+) {
+    for entity in query.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
 }

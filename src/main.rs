@@ -30,6 +30,7 @@ use systems::{
     reset_for_formation,
 };
 use formation_selection::{handle_formation_click, cleanup_formation_ui};
+use setup::ui::cleanup_power_bar; // ✅ Corrección: import correcto desde setup::ui
 
 /// 🔁 Adaptador para poder usar `show_formation_ui` desde `OnEnter` sin conflictos de ownership
 fn show_formation_ui_system(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -80,7 +81,7 @@ fn main() {
             in_state(AppState::FormationSelection).or_else(in_state(AppState::FormationChange))
         ))
 
-        // Cleanup al pasar a InGame
+        // Cleanup de UI de formación
         .add_systems(OnEnter(AppState::InGame), cleanup_formation_ui)
 
         // Setup del juego
@@ -88,6 +89,9 @@ fn main() {
 
         // Reinicio tras gol
         .add_systems(OnEnter(AppState::FormationChange), reset_for_formation)
+
+        // Limpieza de barra de poder al cambiar formación
+        .add_systems(OnEnter(AppState::FormationChange), cleanup_power_bar) // ✅
 
         // Lógica activa del juego
         .add_systems(Update, (

@@ -36,7 +36,7 @@ pub fn show_formation_ui(commands: &mut Commands, asset_server: &Res<AssetServer
             for (i, player) in ["Jugador 1", "Jugador 2"].iter().enumerate() {
                 parent.spawn(TextBundle {
                     text: Text::from_section(
-                        format!("{player}, elige tu formación"),
+                        format!("{player}, elige tu formacion"),
                         TextStyle {
                             font: font.clone(),
                             font_size: 30.0,
