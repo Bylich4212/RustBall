@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-
+use bevy::ui::Interaction;
 use crate::components::*;
 use crate::resources::*;
 
@@ -33,3 +33,26 @@ pub fn update_power_bar(
         style.width = Val::Px(200.0 * turn_state.power);
     }
 }
+
+use crate::formation_selection::SelectionButton;
+
+pub fn animate_selection_buttons(
+    turn: Res<PlayerFormations>,
+    mut query: Query<(&Interaction, &SelectionButton, &mut BackgroundColor), With<Button>>,
+) {
+    for (interaction, button, mut color) in &mut query {
+        let is_selected = match button.player_id {
+            1 => turn.player1 == Some(button.formation),
+            2 => turn.player2 == Some(button.formation),
+            _ => false,
+        };
+
+        *color = match *interaction {
+            Interaction::Pressed => BackgroundColor(Color::rgb(0.2, 0.7, 0.2)), // clic actual
+            Interaction::Hovered if !is_selected => BackgroundColor(Color::rgb(0.5, 0.5, 0.9)), // hover visual
+            _ if is_selected => BackgroundColor(Color::rgb(0.2, 0.7, 0.2)), // selección guardada
+            _ => BackgroundColor(Color::DARK_GRAY), // default
+        };
+    }
+}
+

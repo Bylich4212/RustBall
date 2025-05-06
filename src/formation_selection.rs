@@ -8,7 +8,6 @@ pub struct SelectionButton {
     pub formation: Formation,
 }
 
-// ✅ Versión compatible con comandos referenciados
 pub fn show_formation_ui(commands: &mut Commands, asset_server: &Res<AssetServer>) {
     let font = asset_server.load("fonts/Linebeam.ttf");
 
@@ -91,7 +90,7 @@ pub fn handle_formation_click(
     mut interaction_query: Query<(&Interaction, &SelectionButton), (Changed<Interaction>, With<Button>)>,
     mut formations: ResMut<PlayerFormations>,
     mut next_state: ResMut<NextState<AppState>>,
-    current_state: Res<State<AppState>>, // ✅ Detecta el estado actual
+    current_state: Res<State<AppState>>,
 ) {
     for (interaction, button) in &mut interaction_query {
         if *interaction == Interaction::Pressed {

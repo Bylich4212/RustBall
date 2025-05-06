@@ -4,13 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.12"
+bevy = { version = "0.12.1", features = ["bevy_audio", "mp3"] }
 rand = "0.8"
 
 [dependencies.bevy_rapier2d]
 version = "0.24"
-features = [ "default",]
+features = [ "default" ]
 
 [dependencies.tokio]
 version = "1.38"
-features = [ "full",]
+features = [ "full" ]
+

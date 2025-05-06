@@ -5,9 +5,17 @@ pub mod ui_systems;
 pub mod visual_systems;
 pub mod reset_for_formation; // ✅ lo registramos
 
-pub use goal_systems::*;
+// Exportamos todos los sistemas relevantes
+pub use goal_systems::{
+    detect_goal,
+    handle_goal,
+    goal_banner_fadeout,
+    setup_goal_timer,
+    wait_and_change_state,
+};
+
 pub use input_systems::*;
 pub use turn_systems::*;
 pub use ui_systems::*;
 pub use visual_systems::*;
-pub use reset_for_formation::*; // ✅ lo exportamos también
+pub use reset_for_formation::*;

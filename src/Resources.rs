@@ -30,16 +30,21 @@ pub struct PlayerFormations {
 }
 
 /// Estados globales del juego
-#[derive(States, Default, Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(States, Clone, Eq, PartialEq, Debug, Hash, Default)]
 pub enum AppState {
     #[default]
-    FormationSelection,  // Pantalla inicial para elegir formación
-    InGame,              // Juego activo
-    FormationChange,     // 🔁 Cambio de formación tras un gol
+    FormationSelection,
+    InGame,
+    FormationChange,
+    GoalScored, // ✅ nuevo estado temporal
 }
 
 #[derive(Component)]
 pub struct PowerBarBackground;
+
+#[derive(Resource)]
+pub struct TeamSelectionMusic(pub Handle<AudioSource>);
+
 
 
 
