@@ -48,6 +48,9 @@ struct InGameMusic(Handle<AudioSource>);
 struct InGameMusicTag;
 
 #[derive(Resource)]
+struct GoalSound(Handle<AudioSource>); // ✅ NUEVO recurso de audio de gol
+
+#[derive(Resource)]
 struct BackgroundImage(Handle<Image>);
 #[derive(Component)]
 struct BackgroundTag;
@@ -55,9 +58,11 @@ struct BackgroundTag;
 // 🎵 Música
 fn load_team_selection_music(mut commands: Commands, asset_server: Res<AssetServer>) {
     let menu = asset_server.load("audio/uefa-champions-league-theme.mp3");
-    let game = asset_server.load("audio/love_me_again.mp3");
+    let game = asset_server.load("audio/love_me_again.ogg");
+    let goal = asset_server.load("audio/mariano-closs-ahi-estaaaaa-gooool.ogg");
     commands.insert_resource(TeamSelectionMusic(menu));
     commands.insert_resource(InGameMusic(game));
+    commands.insert_resource(GoalSound(goal));
 }
 
 fn play_selection_music(music: Res<TeamSelectionMusic>, mut commands: Commands) {
@@ -91,6 +96,13 @@ fn stop_ingame_music(mut commands: Commands, query: Query<Entity, With<InGameMus
     for entity in &query {
         commands.entity(entity).despawn_recursive();
     }
+}
+
+fn play_goal_sound(audio: Res<GoalSound>, mut commands: Commands) {
+    commands.spawn(AudioBundle {
+        source: audio.0.clone(),
+        settings: PlaybackSettings::ONCE,
+    });
 }
 
 // 🖼️ Fondo
@@ -143,7 +155,7 @@ fn cleanup_cameras_on_enter(mut commands: Commands, query: Query<Entity, With<Ca
 // 🏁 MAIN
 fn main() {
     App::new()
-        .insert_resource(GlobalVolume::new(1.0)) // 🎚️ Asegura volumen general
+        .insert_resource(GlobalVolume::new(1.0))
         .insert_resource(ClearColor(Color::BLACK))
         .add_state::<AppState>()
         .insert_resource(TurnState {
@@ -217,6 +229,7 @@ fn main() {
 
         // Gol
         .add_systems(OnEnter(AppState::GoalScored), setup_goal_timer)
+        .add_systems(OnEnter(AppState::GoalScored), play_goal_sound) // ✅ Se agrega sonido al entrar en GoalScored
         .add_systems(Update, (
             goal_banner_fadeout,
             wait_and_change_state,
