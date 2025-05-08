@@ -43,6 +43,7 @@ pub fn handle_goal(
     mut sprites: Query<&mut Sprite>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    mut next_state: ResMut<NextState<AppState>>,
 ) {
     for event in goal_events.read() {
         // 🎯 Actualizar marcador
@@ -92,8 +93,12 @@ pub fn handle_goal(
             GoalBanner,
         ));
 
-        // ⏱️ Cambiar al estado GoalScored para mostrar animación y luego transición
-        commands.insert_resource(NextState(Some(AppState::GoalScored)));
+        // ⏱️ Guardamos el siguiente estado dependiendo del marcador
+        if scores.left >= 2 || scores.right >= 2 {
+            next_state.set(AppState::GameOver);
+        } else {
+            next_state.set(AppState::GoalScored);
+        }
     }
 }
 
@@ -128,8 +133,13 @@ pub fn goal_banner_fadeout(
 pub fn wait_and_change_state(
     mut next_state: ResMut<NextState<AppState>>,
     timer: Res<GoalBannerTimer>,
+    scores: Res<Scores>,
 ) {
     if timer.timer.finished() {
-        next_state.set(AppState::FormationChange);
+        if scores.left >= 5 || scores.right >= 5 {
+            next_state.set(AppState::GameOver);
+        } else {
+            next_state.set(AppState::FormationChange);
+        }
     }
 }

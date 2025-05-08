@@ -9,6 +9,7 @@ mod systems;
 mod setup;
 mod formation;
 mod formation_selection;
+mod game_over; // ✅ Agregado
 
 use crate::resources::AppState;
 use resources::*;
@@ -37,6 +38,9 @@ use systems::{
 use formation_selection::{handle_formation_click, cleanup_formation_ui};
 use setup::ui::cleanup_power_bar;
 
+// ✅ Importa funciones del módulo game_over
+use game_over::{show_game_over_screen, cleanup_game_over_ui};
+
 #[derive(Resource)]
 struct TeamSelectionMusic(Handle<AudioSource>);
 #[derive(Component)]
@@ -48,7 +52,7 @@ struct InGameMusic(Handle<AudioSource>);
 struct InGameMusicTag;
 
 #[derive(Resource)]
-struct GoalSound(Handle<AudioSource>); // ✅ NUEVO recurso de audio de gol
+struct GoalSound(Handle<AudioSource>);
 
 #[derive(Resource)]
 struct BackgroundImage(Handle<Image>);
@@ -229,11 +233,15 @@ fn main() {
 
         // Gol
         .add_systems(OnEnter(AppState::GoalScored), setup_goal_timer)
-        .add_systems(OnEnter(AppState::GoalScored), play_goal_sound) // ✅ Se agrega sonido al entrar en GoalScored
+        .add_systems(OnEnter(AppState::GoalScored), play_goal_sound)
         .add_systems(Update, (
             goal_banner_fadeout,
             wait_and_change_state,
         ).run_if(in_state(AppState::GoalScored)))
+
+        // ✅ Game Over
+        .add_systems(OnEnter(AppState::GameOver), show_game_over_screen)
+        .add_systems(OnExit(AppState::GameOver), cleanup_game_over_ui)
 
         .run();
 }

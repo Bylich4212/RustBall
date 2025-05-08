@@ -30,14 +30,16 @@ pub struct PlayerFormations {
 }
 
 /// Estados globales del juego
-#[derive(States, Clone, Eq, PartialEq, Debug, Hash, Default)]
+#[derive(States, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum AppState {
     #[default]
     FormationSelection,
     InGame,
+    GoalScored,
     FormationChange,
-    GoalScored, // ✅ nuevo estado temporal
+    GameOver, // 👈 nuevo estado
 }
+
 
 #[derive(Component)]
 pub struct PowerBarBackground;
@@ -45,6 +47,8 @@ pub struct PowerBarBackground;
 #[derive(Resource)]
 pub struct TeamSelectionMusic(pub Handle<AudioSource>);
 
+#[derive(Component)]
+pub struct GameOverUI;
 
 
 
