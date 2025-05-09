@@ -3,9 +3,6 @@ use crate::components::{PlayerDisk, FormationMenu, Ball, GoalZone};
 use crate::resources::PlayerFormations;
 use crate::formation_selection::show_formation_ui;
 
-// 📦 Importar desde la carpeta setup
-use crate::setup::{spawn_ball, spawn_goals};
-
 /// 🔁 Limpia jugadores, arcos, pelotas y formaciones para seleccionar nuevas tras un gol.
 pub fn reset_for_formation(
     mut commands: Commands,

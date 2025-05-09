@@ -1,5 +1,3 @@
-use bevy::prelude::*;
-
 // Etiqueta para identificar la cámara del juego
 #[derive(Component)]
 pub struct GameCamera;

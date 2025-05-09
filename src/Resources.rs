@@ -44,11 +44,9 @@ pub enum AppState {
 #[derive(Component)]
 pub struct PowerBarBackground;
 
-#[derive(Resource)]
-pub struct TeamSelectionMusic(pub Handle<AudioSource>);
 
-#[derive(Component)]
-pub struct GameOverUI;
+
+
 
 
 

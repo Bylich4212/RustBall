@@ -9,55 +9,42 @@ mod systems;
 mod setup;
 mod formation;
 mod formation_selection;
-mod game_over; // ✅ Agregado
+mod game_over;
 
 use crate::resources::AppState;
 use resources::*;
 use events::*;
 use setup::{setup, cleanup_cameras};
-use systems::{
-    auto_select_first_disk,
-    cycle_disk_selection,
-    aim_with_keyboard,
-    charge_shot_power,
-    fire_selected_disk,
-    check_turn_end,
-    detect_goal,
-    handle_goal,
-    update_turn_text,
-    update_score_text,
-    draw_aim_direction_gizmo,
-    update_power_bar,
-    animate_selected_disk,
-    reset_for_formation,
-    animate_selection_buttons,
-    goal_banner_fadeout,
-    setup_goal_timer,
-    wait_and_change_state,
-};
+use systems::*;
 use formation_selection::{handle_formation_click, cleanup_formation_ui};
 use setup::ui::cleanup_power_bar;
-
-// ✅ Importa funciones del módulo game_over
 use game_over::{show_game_over_screen, cleanup_game_over_ui};
 
 #[derive(Resource)]
 struct TeamSelectionMusic(Handle<AudioSource>);
-#[derive(Component)]
-struct FormationMusicTag;
-
 #[derive(Resource)]
 struct InGameMusic(Handle<AudioSource>);
-#[derive(Component)]
-struct InGameMusicTag;
-
 #[derive(Resource)]
 struct GoalSound(Handle<AudioSource>);
+#[derive(Resource)]
+struct GameOverMusic(Handle<AudioSource>); // ✅
 
 #[derive(Resource)]
 struct BackgroundImage(Handle<Image>);
+#[derive(Resource)]
+struct GameOverBackground(Handle<Image>); // ✅
+
+#[derive(Component)]
+struct FormationMusicTag;
+#[derive(Component)]
+struct InGameMusicTag;
+#[derive(Component)]
+struct GameOverMusicTag; // ✅
+
 #[derive(Component)]
 struct BackgroundTag;
+#[derive(Component)]
+struct GameOverBackgroundTag; // ✅
 
 // 🎵 Música
 fn load_team_selection_music(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -69,14 +56,18 @@ fn load_team_selection_music(mut commands: Commands, asset_server: Res<AssetServ
     commands.insert_resource(GoalSound(goal));
 }
 
+fn load_game_over_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let music = asset_server.load("audio/Avicii_-_The_Nights_CeeNaija.com_.ogg");
+    let image = asset_server.load("Camp-Nou.png");
+    commands.insert_resource(GameOverMusic(music));
+    commands.insert_resource(GameOverBackground(image));
+}
+
 fn play_selection_music(music: Res<TeamSelectionMusic>, mut commands: Commands) {
-    commands.spawn((
-        AudioBundle {
-            source: music.0.clone(),
-            settings: PlaybackSettings::LOOP,
-        },
-        FormationMusicTag,
-    ));
+    commands.spawn((AudioBundle {
+        source: music.0.clone(),
+        settings: PlaybackSettings::LOOP,
+    }, FormationMusicTag));
 }
 
 fn stop_selection_music(mut commands: Commands, query: Query<Entity, With<FormationMusicTag>>) {
@@ -86,14 +77,10 @@ fn stop_selection_music(mut commands: Commands, query: Query<Entity, With<Format
 }
 
 fn play_ingame_music(music: Res<InGameMusic>, mut commands: Commands) {
-    println!("🎵 Iniciando música del juego...");
-    commands.spawn((
-        AudioBundle {
-            source: music.0.clone(),
-            settings: PlaybackSettings::LOOP,
-        },
-        InGameMusicTag,
-    ));
+    commands.spawn((AudioBundle {
+        source: music.0.clone(),
+        settings: PlaybackSettings::LOOP,
+    }, InGameMusicTag));
 }
 
 fn stop_ingame_music(mut commands: Commands, query: Query<Entity, With<InGameMusicTag>>) {
@@ -109,6 +96,19 @@ fn play_goal_sound(audio: Res<GoalSound>, mut commands: Commands) {
     });
 }
 
+fn play_game_over_music(music: Res<GameOverMusic>, mut commands: Commands) {
+    commands.spawn((AudioBundle {
+        source: music.0.clone(),
+        settings: PlaybackSettings::LOOP,
+    }, GameOverMusicTag));
+}
+
+fn stop_game_over_music(mut commands: Commands, query: Query<Entity, With<GameOverMusicTag>>) {
+    for entity in &query {
+        commands.entity(entity).despawn_recursive();
+    }
+}
+
 // 🖼️ Fondo
 fn load_background_image(mut commands: Commands, asset_server: Res<AssetServer>) {
     let image = asset_server.load("championsfondo3.png");
@@ -116,33 +116,59 @@ fn load_background_image(mut commands: Commands, asset_server: Res<AssetServer>)
 }
 
 fn spawn_selection_background(mut commands: Commands, background: Res<BackgroundImage>) {
-    commands.spawn((
-        NodeBundle {
+    commands.spawn((NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            position_type: PositionType::Absolute,
+            ..default()
+        },
+        background_color: Color::WHITE.into(),
+        ..default()
+    }, BackgroundTag)).with_children(|parent| {
+        parent.spawn(ImageBundle {
             style: Style {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
-                position_type: PositionType::Absolute,
                 ..default()
             },
-            background_color: Color::WHITE.into(),
+            image: UiImage::new(background.0.clone()),
             ..default()
-        },
-        BackgroundTag,
-    ))
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(100.0),
-                    ..default()
-                },
-                image: UiImage::new(background.0.clone()),
-                ..default()
-            });
         });
+    });
 }
 
 fn despawn_selection_background(mut commands: Commands, query: Query<Entity, With<BackgroundTag>>) {
+    for entity in &query {
+        commands.entity(entity).despawn_recursive();
+    }
+}
+
+fn spawn_game_over_background(mut commands: Commands, bg: Res<GameOverBackground>) {
+    commands.spawn((NodeBundle {
+        style: Style {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            position_type: PositionType::Absolute,
+            ..default()
+        },
+        background_color: Color::BLACK.into(),
+        ..default()
+    }, GameOverBackgroundTag)).with_children(|parent| {
+        parent.spawn(ImageBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                ..default()
+            },
+            image: UiImage::new(bg.0.clone()),
+            transform: Transform::from_xyz(0.0, 0.0, -1.0), // 👈 z al fondo
+            ..default()
+        });
+    });
+}
+
+fn cleanup_game_over_background(mut commands: Commands, query: Query<Entity, With<GameOverBackgroundTag>>) {
     for entity in &query {
         commands.entity(entity).despawn_recursive();
     }
@@ -174,10 +200,7 @@ fn main() {
             player1: None,
             player2: None,
         })
-        .add_plugins((
-            DefaultPlugins,
-            RapierPhysicsPlugin::<NoUserData>::default(),
-        ))
+        .add_plugins((DefaultPlugins, RapierPhysicsPlugin::<NoUserData>::default()))
         .insert_resource(RapierConfiguration {
             gravity: Vec2::ZERO,
             ..default()
@@ -185,7 +208,11 @@ fn main() {
         .add_event::<GoalEvent>()
 
         // Startup
-        .add_systems(Startup, (load_team_selection_music, load_background_image))
+        .add_systems(Startup, (
+            load_team_selection_music,
+            load_background_image,
+            load_game_over_assets, // ✅
+        ))
 
         // Menú
         .add_systems(OnEnter(AppState::FormationSelection), show_formation_ui_system)
@@ -200,7 +227,8 @@ fn main() {
             handle_formation_click,
             animate_selection_buttons,
         ).run_if(
-            in_state(AppState::FormationSelection).or_else(in_state(AppState::FormationChange))
+            in_state(AppState::FormationSelection)
+                .or_else(in_state(AppState::FormationChange))
         ))
 
         // Setup de juego
@@ -240,8 +268,20 @@ fn main() {
         ).run_if(in_state(AppState::GoalScored)))
 
         // ✅ Game Over
-        .add_systems(OnEnter(AppState::GameOver), show_game_over_screen)
-        .add_systems(OnExit(AppState::GameOver), cleanup_game_over_ui)
+        .add_systems(OnEnter(AppState::GameOver), (
+            despawn_game_entities,
+            spawn_game_over_background,
+            play_game_over_music,
+        ))
+        .add_systems(OnEnter(AppState::GameOver), (
+            show_game_over_screen,
+        ))
+
+        .add_systems(OnExit(AppState::GameOver), (
+            cleanup_game_over_background,
+            stop_game_over_music,
+            cleanup_game_over_ui,
+        ))
 
         .run();
 }

@@ -4,6 +4,8 @@ use crate::components::*;
 use crate::events::*;
 use crate::resources::*;
 use crate::AppState;
+use crate::setup::camera::GameCamera; // ✅ Importa la etiqueta de cámara
+
 
 #[derive(Component)]
 pub struct GoalBanner;
@@ -94,7 +96,7 @@ pub fn handle_goal(
         ));
 
         // ⏱️ Guardamos el siguiente estado dependiendo del marcador
-        if scores.left >= 2 || scores.right >= 2 {
+        if scores.left == 3 || scores.right == 3 {
             next_state.set(AppState::GameOver);
         } else {
             next_state.set(AppState::GoalScored);
@@ -104,7 +106,7 @@ pub fn handle_goal(
 
 pub fn setup_goal_timer(mut commands: Commands) {
     commands.insert_resource(GoalBannerTimer {
-        timer: Timer::from_seconds(5.0, TimerMode::Once),
+        timer: Timer::from_seconds(4.0, TimerMode::Once), // ⏱️ reducido para mejor fluidez
     });
 }
 
@@ -136,10 +138,38 @@ pub fn wait_and_change_state(
     scores: Res<Scores>,
 ) {
     if timer.timer.finished() {
-        if scores.left >= 5 || scores.right >= 5 {
+        if scores.left >= 3 || scores.right >= 3 {
             next_state.set(AppState::GameOver);
         } else {
             next_state.set(AppState::FormationChange);
         }
     }
+}
+
+// ✅ Nuevo sistema: eliminar todas las entidades físicas tras GameOver
+pub fn despawn_game_entities(
+    mut commands: Commands,
+    players: Query<Entity, With<PlayerDisk>>,
+    balls: Query<Entity, With<Ball>>,
+    goals: Query<Entity, With<GoalZone>>,
+    fixed_bodies: Query<Entity, (With<RigidBody>, Without<PlayerDisk>, Without<Ball>)>,
+    cameras: Query<Entity, With<GameCamera>>,
+) {
+    for entity in players.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    for entity in balls.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    for entity in goals.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    for entity in fixed_bodies.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+    for entity in cameras.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+
+    println!("✅ Entidades físicas y visuales eliminadas tras GameOver.");
 }
