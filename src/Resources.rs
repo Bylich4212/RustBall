@@ -7,6 +7,7 @@ pub struct TurnState {
     pub selected_entity: Option<Entity>,
     pub aim_direction: Vec2,
     pub power: f32,
+    pub skip_turn_switch: bool, // 👈 NUEVO
 }
 
 // 👇  implementa tu propio Default
@@ -18,6 +19,7 @@ impl Default for TurnState {
             selected_entity: None,
             aim_direction: Vec2::ZERO,
             power: 0.0,
+            skip_turn_switch: false,
         }
     }
 }

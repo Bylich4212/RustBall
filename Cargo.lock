@@ -2896,6 +2896,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_rapier2d",
+ "fastrand 2.3.0",
  "rand",
  "tokio",
  "uuid",

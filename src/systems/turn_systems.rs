@@ -76,6 +76,7 @@ pub fn check_turn_end(
     entities: Query<Entity, With<TurnControlled>>,
     mut sprites: Query<&mut Sprite>,
     disks: Query<&PlayerDisk>,
+    mut powerup_control: ResMut<crate::powerup::PowerUpControl>, // ✅ Añadir esto
 ) {
     if !turn_state.in_motion {
         return;
@@ -86,6 +87,7 @@ pub fn check_turn_end(
 
     if all_stopped {
         turn_state.in_motion = false;
+
         for entity in &entities {
             if let Ok(_disk) = disks.get(entity) {
                 if let Ok(mut sprite) = sprites.get_mut(entity) {
@@ -94,7 +96,20 @@ pub fn check_turn_end(
             }
             commands.entity(entity).remove::<TurnControlled>();
         }
+
         turn_state.selected_entity = None;
-        turn_state.current_turn = turn_state.current_turn % 2 + 1;
+
+        if turn_state.skip_turn_switch {
+            println!("⏭️ Power-Up de DOBLE TURNO: turno no cambiado");
+            turn_state.skip_turn_switch = false;
+        } else {
+            turn_state.current_turn = turn_state.current_turn % 2 + 1;
+        }
+
+        // ✅ Ahora sí: actualizar turnos
+        powerup_control.turns_since_last += 1;
+        println!("🔁 Turno terminado, contador actualizado: {}", powerup_control.turns_since_last);
     }
 }
+
+

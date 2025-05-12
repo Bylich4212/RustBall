@@ -7,8 +7,11 @@ pub mod setup;
 pub mod formation;
 pub mod formation_selection;
 pub mod game_over;
+mod powerup;
 
 use bevy::asset::AssetMetaCheck;
+use powerup::*;
+
 // 🔁 Entradas para WebAssembly y escritorio
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -205,21 +208,19 @@ pub fn main_internal() {
             player1: None,
             player2: None,
         })
-        // 👇 No pongas ::default() aquí
+        .insert_resource(PowerUpControl::default())
         .add_plugins((
-            DefaultPlugins
-                .set(AssetPlugin {
-                    // nuevo nombre del campo  ↓↓↓
-                    watch_for_changes_override: Some(false),
-                    ..default()
-                }),
+            DefaultPlugins.set(AssetPlugin {
+                watch_for_changes_override: Some(false),
+                ..default()
+            }),
             RapierPhysicsPlugin::<NoUserData>::default(),
         ))
         .insert_resource(RapierConfiguration {
             gravity: Vec2::ZERO,
             ..default()
         })
-    .add_event::<GoalEvent>()
+        .add_event::<GoalEvent>()
         .add_systems(Startup, (
             load_team_selection_music,
             load_background_image,
@@ -264,6 +265,8 @@ pub fn main_internal() {
             update_turn_text,
             update_score_text,
             animate_selected_disk,
+            spawn_power_up_if_needed,  // 👈 spawnea si toca
+            detect_powerup_collision,  // 👈 asigna efecto al disco
         ).run_if(in_state(AppState::InGame)))
         .add_systems(PostUpdate, (
             fire_selected_disk,
