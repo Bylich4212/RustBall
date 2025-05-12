@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::resources::Scores;
-use crate::GameOverBackground;
+use crate::resources::GameOverBackground;
 
 #[derive(Component)]
 pub struct GameOverUI;

@@ -9,7 +9,7 @@ use bevy::prelude::*;
 use crate::resources::PlayerFormations;
 use crate::components::PlayerDisk;
 
-pub use camera::{spawn_camera_and_background, cleanup_cameras}; // ✅ agregás cleanup_cameras
+pub use camera::{spawn_camera_and_background, cleanup_cameras};
 use ui::spawn_ui;
 use field::spawn_walls;
 use players::spawn_players_from_selection;
@@ -22,7 +22,7 @@ pub fn setup(
     asset_server: Res<AssetServer>,
     player_formations: Res<PlayerFormations>,
     player_query: Query<Entity, With<PlayerDisk>>,
-    camera_query: Query<Entity, With<Camera>>, // 👈 nuevo parámetro
+    camera_query: Query<Entity, With<Camera>>,
 ) {
     cleanup_cameras(&mut commands, camera_query);
 
@@ -33,4 +33,3 @@ pub fn setup(
     spawn_ball(&mut commands, &asset_server);
     spawn_goals(&mut commands, &asset_server);
 }
-

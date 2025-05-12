@@ -1,12 +1,25 @@
 use bevy::prelude::*;
 
-#[derive(Resource, Default)]
+#[derive(Resource)]          // 👈  quita `Default` aquí
 pub struct TurnState {
     pub current_turn: usize,
     pub in_motion: bool,
     pub selected_entity: Option<Entity>,
     pub aim_direction: Vec2,
     pub power: f32,
+}
+
+// 👇  implementa tu propio Default
+impl Default for TurnState {
+    fn default() -> Self {
+        Self {
+            current_turn: 1,          // ⚽ el juego arranca con el jugador 1
+            in_motion: false,
+            selected_entity: None,
+            aim_direction: Vec2::ZERO,
+            power: 0.0,
+        }
+    }
 }
 
 #[derive(Resource, Default)]
@@ -44,7 +57,8 @@ pub enum AppState {
 #[derive(Component)]
 pub struct PowerBarBackground;
 
-
+#[derive(Resource)]
+pub struct GameOverBackground(pub Handle<Image>);
 
 
 
